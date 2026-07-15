@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WenaMix Pro - Panel de Administración</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Variables de Tema - Por defecto Modo Oscuro */
+        :root {
+            --bg-dark: #09090e;
+            --input-bg: #11111f;
+            --border-color: #222235;
+            --primary: #4f46e5;
+            --primary-accent: #10b981;
+            --warning: #f59e0b;
+            --danger-btn: #ef4444;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --card-shadow: rgba(0, 0, 0, 0.6);
+            --btn-slate-bg: #222235;
+            --btn-slate-hover: #2a2a40;
+        }
+
+        /* Estilos Tema Claro */
+        body.light-theme {
+            --bg-dark: #f8fafc;
+            --input-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --primary: #4f46e5;
+            --primary-accent: #10b981;
+            --warning: #d97706;
+            --danger-btn: #dc2626;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            --btn-slate-bg: #e2e8f0;
+            --btn-slate-hover: #cbd5e1;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #mainAppWrapper {
+            display: none;
+        }
+
+        /* ==========================================================================
+           PANTALLA DE LOGIN
+           ========================================================================== */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: background-color 0.3s;
+        }
+
+        .login-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 40px 35px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 410px;
+            box-shadow: 0 20px 40px var(--card-shadow);
+            box-sizing: border-box;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header .logo-container-login {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 166px rgba(79, 70, 229, 0.3);
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+
+        .login-header .logo-container-login img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .login-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .login-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .login-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i.input-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .login-group input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 12px 42px;
+            color: var(--text-main);
+            border-radius: 10px;
+            height: 48px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .login-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            font-size: 1rem;
+            z-index: 5;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-main);
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-login:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        /* ==========================================================================
+           CABECERA
+           ========================================================================== */
+        header {
+            background: var(--input-bg);
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s, border-color 0.3s;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #storeLogoElement {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: white;
+            border: 2px solid var(--border-color);
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        #storeLogoElement img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-right-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .header-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 180px;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 10px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            height: 32px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0 10px 0 30px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .search-input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-theme-header {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-theme-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-logout-right {
+            background: #d92d2d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            height: 32px;
+            padding: 0 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .btn-logout-right:hover {
+            background: #be2525;
+        }
+
+        /* Nuevo indicador de sesión debajo del botón */
+        .session-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+
+        .session-info span {
+            color: var(--primary-accent);
+            font-weight: bold;
+        }
+
+        /* ==========================================================================
+           NAVEGACIÓN Y ESTRUCTURA GENERAL
+           ========================================================================== */
+        .nav-tabs {
+            display: flex;
+            background: var(--input-bg);
+            padding: 10px 24px;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-link {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-link:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-link.active {
+            color: white;
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        main {
+            max-width: 1250px;
+            margin: 25px auto;
+            padding: 0 24px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .role-section {
+            background: var(--input-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .config-section {
+            background: var(--bg-dark);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        /* ESTILOS DEL COMPONENTE TASA DE CAMBIO - SOLO MANUAL */
+        .config-box {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .config-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .status-subbox {
+            background: var(--bg-dark);
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+        }
+        .info-text {
+            margin: 5px 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .info-text strong {
+            color: var(--text-main);
+        }
+        .input-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .input-inline input {
+            width: 110px;
+            padding: 6px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 6px;
+            text-align: right;
+        }
+        .btn-primary, .btn-secondary {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            color: white;
+        }
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #5a6268; }
+
+        .currency-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .currency-input-group input, .currency-input-group select {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            color: var(--text-main);
+            border-radius: 6px;
+            height: 40px;
+            box-sizing: border-box;
+        }
+
+        .filter-search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .category-filter-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip:hover, .filter-chip.active {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .filter-chip.active {
+            background: rgba(79, 70, 229, 0.15);
+            border-color: var(--primary);
+        }
+
+        /* ==========================================================================
+           FORMULARIO EN UNA SOLA LÍNEA CONTINUA
+           ========================================================================== */
+        .form-almacen-grid {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+
+        .form-almacen-grid input[type="text"],
+        .form-almacen-grid input[type="number"],
+        .form-almacen-grid select {
+            height: 28px !important;
+            padding: 4px 8px !important;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.85rem;
+        }
+
+        .field-large-name { flex: 1.8; min-width: 130px; }
+        .field-med-cat { flex: 1.2; min-width: 110px; }
+        .field-small { flex: 0.7; min-width: 60px; }
+
+        .global-currency-financial-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.02);
+            padding: 0 4px;
+            border-radius: 6px;
+            border: 1px dashed var(--border-color);
+            height: 28px;
+            box-sizing: border-box;
+            flex: 2.9; 
+            min-width: 200px;
+        }
+        
+        .global-currency-financial-wrapper select {
+            width: 55px !important;
+            padding: 2px !important;
+            height: 22px !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        
+        .global-currency-financial-wrapper input {
+            height: 22px !important;
+            width: 100%;
+            border: none !important;
+            background: transparent !important;
+        }
+        .global-currency-financial-wrapper input:focus {
+            outline: none;
+        }
+
+        /* NUEVA SECCIÓN DE IMAGEN - CON CÁMARA Y COMPRESIÓN */
+        .image-upload-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1.8;
+            min-width: 200px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2px 6px;
+            height: 28px;
+            box-sizing: border-box;
+        }
+        .image-upload-container input[type="text"] {
+            border: none !important;
+            background: transparent !important;
+            padding: 0 4px !important;
+            height: 100% !important;
+            font-size: 0.8rem !important;
+            width: 100%;
+            outline: none;
+            color: var(--text-main);
+        }
+        .image-upload-container input[type="text"]::placeholder {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+        .img-preview-box {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-dark);
+            display: none;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .img-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .btn-camera {
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            border: none;
+            transition: background 0.2s;
+        }
+        .btn-camera:hover {
+            background: #4338ca;
+        }
+        .btn-remove-img {
+            background: transparent;
+            border: none;
+            color: var(--danger-btn);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: none;
+            flex-shrink: 0;
+            padding: 0 2px;
+        }
+        .btn-remove-img:hover {
+            color: #dc2626;
+        }
+        .file-name-display {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 0;
+        }
+        .photo-note {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-primary-compact {
+            background: #4f46e5;
+            height: 28px !important;
+            padding: 0 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .btn-primary-compact:hover {
+            background: #4338ca;
+        }
+
+        /* ==========================================================================
+           TABLAS GENERALES Y DISEÑO DE SUB-BLOQUES DE AUDITORÍA (IPV)
+           ========================================================================== */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .prod-thumb {
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            background: var(--bg-dark);
+        }
+
+        .no-img-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-dark);
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px dashed var(--border-color);
+            display: inline-block;
+        }
+
+        .tag-categoria {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Cabecera Web por defecto */
+        .table-ipv th { text-align: center !important; font-size: 0.8rem; border: 1px solid var(--border-color); }
+        .table-ipv td { border: 1px solid var(--border-color); text-align: center; font-family: monospace; }
+        .bg-entrada { background-color: rgba(59, 130, 246, 0.1) !important; color: #60a5fa; }
+        .bg-venta { background-color: rgba(16, 185, 129, 0.1) !important; color: #34d399; }
+        .bg-existencia { background-color: rgba(245, 158, 11, 0.1) !important; color: #fbbf24; }
+
+        /* Contenedores de herramientas superiores del IPV */
+        .ipv-tools-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-ipv-tool {
+            height: 32px;
+            padding: 0 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            background: var(--input-bg);
+            transition: all 0.2s;
+        }
+        .btn-ipv-tool:hover {
+            background: var(--btn-slate-hover);
+            border-color: var(--primary);
+        }
+
+        .btn-delete-original-style {
+            background: #ef4444 !important;
+            color: #ffffff !important;
+            border: none !important;
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-delete-original-style:hover {
+            background: #dc2626 !important;
+        }
+
+        /* Estilo para los botones de edición integrados */
+        .btn-edit-inline-style {
+            background: var(--warning) !important;
+            color: #ffffff !important;
+            border: none !important;
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-edit-inline-style:hover {
+            background: #d97706 !important;
+        }
+
+        .warning-card-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--primary-accent);
+            color: var(--primary-accent);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vendedor-item {
+            background: var(--bg-dark);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        button.btn-action-normal {
+            height: 36px;
+            padding: 0 15px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-success { background: var(--primary-accent); }
+        .btn-slate-adaptive { 
+            background: var(--btn-slate-bg) !important; 
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        .btn-slate-adaptive:hover {
+            background: var(--btn-slate-hover) !important;
+        }
+
+        /* Toast flotante para alertas dinámicas */
+        #toastNotificationFlotante {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 14px 22px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: none;
+            font-family: sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        /* ==========================================================================
+           REGLAS EXCLUSIVAS DE IMPRESIÓN - Arial 9px CON ID
+           ========================================================================== */
+        @media print {
+            @page {
+                size: letter landscape;
+                margin: 0.08in 0.05in;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                font-family: 'Arial', Helvetica, sans-serif !important;
+            }
+            /* Ocultar navegación */
+            header, nav, .nav-tabs, .ipv-tools-container, .btn-ipv-tool, button, p, .warning-card-box { 
+                display: none !important; 
+            }
+            body * { 
+                visibility: hidden; 
+            }
+            /* Hacer visible la Auditoría */
+            #tabAuditoria, #tabAuditoria * { 
+                visibility: visible; 
+            }
+            #tabAuditoria {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                padding: 3px !important;
+            }
+
+            /* Ajuste del título */
+            #tabAuditoria h3 {
+                font-size: 12px !important;
+                font-weight: bold !important;
+                margin-top: 2px !important;
+                margin-bottom: 5px !important;
+            }
+
+            /* Tabla completa */
+            .table-ipv, table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                border: 1px solid #000000 !important;
+                margin-top: 2px !important;
+                table-layout: fixed !important;
+            }
+
+            /* Ocultar cabecera web, mostrar cabecera impresión */
+            .table-ipv thead tr.web-only-row {
+                display: none !important;
+            }
+            
+            .table-ipv thead tr.print-flat-row {
+                display: table-row !important;
+            }
+
+            /* Bordes y celdas - Arial 9px */
+            .table-ipv th, .table-ipv td, table th, table td {
+                border: 1px solid #000000 !important;
+                background: transparent !important;
+                color: #000000 !important;
+                padding: 2px 1px !important;
+                font-size: 9px !important;
+                text-align: center !important;
+                vertical-align: middle !important;
+                font-family: 'Arial', Helvetica, sans-serif !important;
+            }
+
+            .table-ipv th {
+                font-weight: bold !important;
+                text-transform: uppercase !important;
+                font-size: 9px !important;
+                padding: 2px 1px !important;
+                background-color: #f0f0f0 !important;
+            }
+
+            .table-ipv td {
+                font-family: 'Arial', Helvetica, sans-serif !important;
+                font-size: 9px !important;
+            }
+
+            /* Negritas para números importantes */
+            .table-ipv td.bold-number {
+                font-weight: bold !important;
+            }
+
+            /* Alineaciones */
+            .table-ipv th.align-left, .table-ipv td.align-left {
+                text-align: left !important;
+            }
+            .table-ipv th.align-center, .table-ipv td.align-center {
+                text-align: center !important;
+            }
+            .table-ipv th.align-right, .table-ipv td.align-right {
+                text-align: right !important;
+            }
+
+            /* Anchos fijos para que quepa TODO */
+            .table-ipv th:nth-child(1), .table-ipv td:nth-child(1) { width: 7% !important; }  
+            .table-ipv th:nth-child(2), .table-ipv td:nth-child(2) { width: 13% !important; } 
+            .table-ipv th:nth-child(3), .table-ipv td:nth-child(3) { width: 4% !important; }  
+            .table-ipv th:nth-child(4), .table-ipv td:nth-child(4) { width: 6% !important; }  
+            .table-ipv th:nth-child(5), .table-ipv td:nth-child(5) { width: 6% !important; }  
+            .table-ipv th:nth-child(6), .table-ipv td:nth-child(6) { width: 4% !important; }  
+            .table-ipv th:nth-child(7), .table-ipv td:nth-child(7) { width: 6% !important; }  
+            .table-ipv th:nth-child(8), .table-ipv td:nth-child(8) { width: 6% !important; }  
+            .table-ipv th:nth-child(9), .table-ipv td:nth-child(9) { width: 4% !important; }  
+            .table-ipv th:nth-child(10), .table-ipv td:nth-child(10) { width: 6% !important; } 
+            .table-ipv th:nth-child(11), .table-ipv td:nth-child(11) { width: 6% !important; } 
+            .table-ipv th:nth-child(12), .table-ipv td:nth-child(12) { width: 8% !important; } 
+            .table-ipv th:nth-child(13), .table-ipv td:nth-child(13) { width: 8% !important; } 
+
+            .table-ipv td strong {
+                font-weight: bold !important;
+            }
+
+            .table-ipv td .moneda-label {
+                display: none !important;
+            }
+        }
+
+        /* Fila de cabecera plana oculta por defecto en la web */
+        .table-ipv thead tr.print-flat-row {
+            display: none;
+        }
+
+        @media(max-width: 850px) {
+            .form-almacen-grid { flex-wrap: wrap; }
+            .field-large-name, .field-med-cat, .global-currency-financial-wrapper, .image-upload-container { flex: 1 1 45%; }
+            .btn-primary-compact { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toastNotificationFlotante"></div>
+
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-container-login" id="loginLogoElement">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h2>WenaMix Pro</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin: 6px 0 0 0;">Acceso Secure al Panel de Control</p>
+            </div>
+            
+            <div class="login-group">
+                <label for="loginUser">Usuario</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="loginUser" placeholder="Nombre de usuario" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="login-group">
+                <label for="loginPass">Contraseña</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="loginPass" placeholder="••••••••" autocomplete="off">
+                    <i class="fas fa-eye password-toggle" id="toggleLoginPass"></i>
+                </div>
+            </div>
+
+            <button id="btnLoginSubmit" class="btn-login">
+                <span>AUTENTICAR Y ENTRAR</span> <i class="fas fa-arrow-right"></i>
+            </button>
+            
+            <div id="loginErrorMessage" style="color: var(--danger-btn); text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <div id="mainAppWrapper">
+        <header>
+            <div class="brand-container">
+                <div id="storeLogoElement">
+                    <i class="fas fa-store" style="font-size: 0.9rem;"></i>
+                </div>
+                <h2 style="margin: 0; font-size: 1.4rem; font-weight: 700;">Wenamix Pro</h2>
+            </div>
+            
+            <div class="header-right-block">
+                <div class="header-actions-row">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchProductInput" placeholder="Buscar...">
+                    </div>
+                    <button class="btn-theme-header" id="themeToggle" title="Cambiar Tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="btn-logout-right" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> <span id="activeUserDisplay">Salir</span>
+                    </button>
+                </div>
+                <!-- Nuevo indicador de sesión -->
+                <div class="session-info" id="sessionInfoDisplay">Sesión: <span id="sessionUserRol">--</span></div>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-link active" onclick="cambiarBloque('tabAlmacen')">
+                <i class="fas fa-boxes"></i> Almacén
+            </button>
+            <button class="tab-link" onclick="cambiarBloque('tabAuditoria')">
+                <i class="fas fa-chart-line"></i> Auditoría (IPV)
+            </button>
+            <button class="tab-link" onclick="cambiarBloque('tabVendedores')">
+                <i class="fas fa-users"></i> Vendedores
+            </button>
+            <button class="tab-link" id="tabConfigLink" onclick="cambiarBloque('tabConfig')" style="display: none;">
+                <i class="fas fa-sliders-h"></i> Configuración
+            </button>
+        </nav>
+
+        <main>
+            <div id="tabAlmacen" class="tab-content role-section active">
+                <h3><i class="fas fa-boxes"></i> Almacén de Productos</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Módulo para añadir, calcular costos e inventariar mercancías por categorías.</p>
+                <div class="config-section">
+                    <div class="form-almacen-grid">
+                        <input type="text" id="prodNombre" class="field-large-name" placeholder="Nombre del Producto">
+                        <select id="prodCategoria" class="field-med-cat">
+                            <option value="" disabled selected>Categoría</option>
+                            <option value="Alimento">Alimento</option>
+                            <option value="Aseo">Aseo</option>
+                            <option value="Hogar">Hogar</option>
+                            <option value="Herramientas">Herramientas</option>
+                            <option value="Electrodoméstico">Electrodoméstico</option>
+                            <option value="Tecnología">Tecnología</option>
+                        </select>
+                        <input type="number" id="prodStock" class="field-small" placeholder="Stock" step="1" min="0">
+                        <div class="global-currency-financial-wrapper">
+                            <select id="globalMonedaSelector" title="Moneda">
+                                <option value="USD">USD</option>
+                                <option value="CUP" selected>CUP</option>
+                            </select>
+                            <input type="number" id="prodCosto" placeholder="Costo" step="0.01" min="0">
+                            <input type="number" id="prodPrecioInput" placeholder="Precio" step="0.01" min="0">
+                        </div>
+                        
+                        <div class="image-upload-container">
+                            <div class="img-preview-box" id="prodImgPreview">
+                                <img id="prodImgPreviewImg" alt="Vista previa">
+                            </div>
+                            <label class="btn-camera" title="Subir foto desde PC o tomar foto con móvil">
+                                <i class="fas fa-camera" style="font-size: 0.8rem;"></i>
+                                <input type="file" id="prodImgFile" accept="image/*" style="display:none;">
+                            </label>
+                            <input type="text" id="prodImgUrl" placeholder="Ruta interna PhotoWena o URL">
+                            <span class="file-name-display" id="prodImgFileName"></span>
+                            <button class="btn-remove-img" id="removeImgBtn" title="Eliminar imagen">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                            <span class="photo-note">PC o móvil</span>
+                        </div>
+
+                        <button id="addProductoBtn" class="btn-primary-compact">
+                            <i class="fas fa-plus"></i> Agregar Producto
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Inventario</th>
+                                <th>Costo USD</th>
+                                <th>Precio USD</th>
+                                <th>Precio CUP</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaProductosContainer"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tabAuditoria" class="tab-content role-section">
+                <div class="ipv-tools-container">
+                    <button class="btn-ipv-tool" onclick="window.print()">
+                        <i class="fas fa-print"></i> Guardar PDF / Imprimir
+                    </button>
+                </div>
+                <h3><i class="fas fa-chart-line"></i> Informe de Ventas e Inventario IPV</h3>
+                <div class="table-responsive">
+                    <table class="table-ipv">
+                        <thead>
+                            <tr class="web-only-row">
+                                <th rowspan="2">COD</th>
+                                <th rowspan="2" class="align-left">CATEGORÍA / PRODUCTO</th>
+                                <th colspan="3" class="bg-entrada">ENTRADAS MERCANCÍA</th>
+                                <th colspan="3" class="bg-venta">VENTAS REALIZADAS</th>
+                                <th colspan="5" class="bg-existencia">EXISTENCIAS Y FINANZAS TOTALES</th>
+                            </tr>
+                            <tr class="web-only-row">
+                                <th class="bg-entrada">cant.</th>
+                                <th class="bg-entrada">costo u.</th>
+                                <th class="bg-entrada">Importe</th>
+                                <th class="bg-venta">cant.</th>
+                                <th class="bg-venta">precio u.</th>
+                                <th class="bg-venta">Importe</th>
+                                <th class="bg-existencia">cant.</th>
+                                <th class="bg-existencia">precio venta</th>
+                                <th class="bg-existencia">Saldo</th>
+                                <th class="bg-existencia">Importe CUP</th>
+                                <th class="bg-existencia">Ganancia</th>
+                            </tr>
+                            <tr class="print-flat-row">
+                                <th class="align-center">COD</th>
+                                <th class="align-left">CATEGORÍA/PRODUCTOS</th>
+                                <th class="align-center">CANT.</th>
+                                <th class="align-center">PRECIO COMPRA</th>
+                                <th class="align-center">IMPORTE</th>
+                                <th class="align-center">CANT.</th>
+                                <th class="align-center">PRECIO VENTA</th>
+                                <th class="align-center">IMPORTE</th>
+                                <th class="align-center">CANT.</th>
+                                <th class="align-center">PRECIO VENTA</th>
+                                <th class="align-center">SALDO</th>
+                                <th class="align-center">IMPORTE</th>
+                                <th class="align-center">GANANCIA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyAuditoriaIPVContainer"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tabVendedores" class="tab-content role-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin:0;"><i class="fas fa-users-cog"></i> Gestión de Vendedores</h3>
+                    <div id="cuposDisplay" style="font-size: 0.9rem; color: var(--text-muted); font-weight: bold;">
+                        Cupos Utilizados -> Avanzado: 0/1 | Estándares: 0/3
+                    </div>
+                </div>
+                <div class="config-section">
+                    <div class="currency-input-group" style="flex-wrap: wrap;">
+                        <input type="text" id="vendedorUser" placeholder="Nombre de Usuario" style="flex: 1; min-width: 150px;">
+                        <div class="input-wrapper" style="flex: 1; min-width: 150px; margin: 0 5px;">
+                            <input type="password" id="vendedorPass" placeholder="Contraseña" style="width:100%;">
+                            <i class="fas fa-eye password-toggle" id="toggleVendedorPass"></i>
+                        </div>
+                        <select id="vendedorRol" style="height:40px;">
+                            <option value="Estándar">Vendedor Estándar</option>
+                            <option value="Avanzado">Vendedor Avanzado</option>
+                        </select>
+                        <button id="addVendedorBtn" class="btn-action-normal btn-success">
+                            <i class="fas fa-user-plus"></i> Crear Vendedor
+                        </button>
+                    </div>
+                </div>
+                <div id="listaVendedoresContainer" style="margin-top:15px;"></div>
+            </div>
+
+            <div id="tabConfig" class="tab-content role-section">
+                <h3><i class="fas fa-sliders-h"></i> Configuración de la Tasa de Cambio</h3>
+                <div class="config-box">
+                    <div class="status-subbox">
+                        <p class="info-text">Tasa Real del Sistema: 1 USD = <strong id="currentRateText">--</strong> CUP</p>
+                        <p class="info-text">Última Actualización: <strong id="lastUpdateText">--</strong></p>
+                    </div>
+                    
+                    <div class="input-inline">
+                        <label for="manualRateInput">Fijar Tasa Manual (CUP):</label>
+                        <input type="number" id="manualRateInput" step="0.01" value="350">
+                        <button id="btnSetManual" class="btn-primary">Establecer Tasa</button>
+                    </div>
+                </div>
+
+                <h3><i class="fas fa-image"></i> Personalizar Logotipo del Negocio</h3>
+                <div class="config-box">
+                    <div class="currency-input-group" style="flex-wrap: wrap;">
+                        <input type="text" id="storeLogoUrl" placeholder="Pegar URL del logo público" style="flex:1; min-width:200px;">
+                        <label class="btn-action-normal btn-slate-adaptive" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; height:40px; box-sizing:border-box;" id="storeLogoFileLabel">
+                            <i class="fas fa-folder-open"></i> Elegir Archivo PC
+                            <input type="file" id="storeLogoFile" accept="image/*" style="display:none;">
+                        </label>
+                        <button id="updateLogoBtn" class="btn-action-normal btn-primary">Aplicar Cambios</button>
+                    </div>
+                    <div id="fileNameDisplay" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;"></div>
+                    <div style="margin-top:15px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Vista previa actual:</span>
+                        <img id="storeLogoPreview" src="" style="max-height:50px; width: 50px; height: 50px; border-radius:50%; object-fit: cover; border: 1px solid var(--border-color); display:none;" alt="Vista previa">
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    // ========================================================================
+    // PANEL GLOBAL DE NOTIFICACIONES DINÁMICAS (TOAST)
+    // ========================================================================
+    function mostrarToast(mensaje, tipo = "exito") {
+        const toast = document.getElementById("toastNotificationFlotante");
+        if (!toast) return;
+        toast.textContent = mensaje;
+        toast.style.backgroundColor = tipo === "error" ? "var(--danger-btn)" : "var(--primary-accent)";
+        toast.style.display = "block";
+        setTimeout(() => { toast.style.display = "none"; }, 4000);
+    }
+
+    // Variable global de control de índice para el módulo de edición
+    let indiceEdicionActivo = null;
+
+    // ========================================================================
+    // 5. SEGURIDAD: SESIÓN, TOKEN CSRF Y DURACIÓN (FASE 5)
+    // ========================================================================
+    function generarToken() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let token = '';
+        for (let i = 0; i < 32; i++) {
+            token += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return token;
+    }
+
+    let csrfToken = localStorage.getItem('csrfToken') || generarToken();
+    localStorage.setItem('csrfToken', csrfToken);
+
+    function validarCSRF(token) {
+        return token === csrfToken;
+    }
+
+    function verificarSesion() {
+        const sesion = sessionStorage.getItem('sesion');
+        if (!sesion) return false;
+        try {
+            const datos = JSON.parse(sesion);
+            const ahora = Date.now();
+            const tiempoTranscurrido = ahora - datos.inicio;
+            const duracionMaxima = 4 * 60 * 60 * 1000; 
+            if (tiempoTranscurrido > duracionMaxima) {
+                cerrarSesion();
+                return false;
+            }
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function verificarSeguridad(token) {
+        if (!verificarSesion()) {
+            mostrarToast('Tu sesión ha expirado. Vuelve a iniciar sesión.', 'error');
+            cerrarSesion();
+            return false;
+        }
+        if (!validarCSRF(token)) {
+            mostrarToast('Token de seguridad inválido. Recarga la página.', 'error');
+            return false;
+        }
+        return true;
+    }
+
+    // ========================================================================
+    // 0. FUNCIONES DE COMPRESIÓN DE IMAGEN
+    // ========================================================================
+    function comprimirImagen(file, maxWidth = 800, calidad = 0.8) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > maxWidth) {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', calidad);
+                    resolve(dataUrl);
+                };
+                img.onerror = () => reject(new Error("Error de renderizado de imagen."));
+                img.src = e.target.result;
+            };
+            reader.onerror = () => reject(new Error("Error de lectura local."));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function redondear(valor) {
+        return Math.round((valor + Number.EPSILON) * 100) / 100;
+    }
+
+    function formatoEstiloContable(valor) {
+        return `$ ${redondear(valor).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")}`;
+    }
+
+    // ========================================================================
+    // 1. VARIABLES GLOBALES Y CONFIGURACIÓN (FASE 1)
+    // ========================================================================
+    const DEFAULT_RATE = 350.0;
+    let exchangeRate = parseFloat(localStorage.getItem('exchangeRate')) || DEFAULT_RATE;
+    let manualRate = parseFloat(localStorage.getItem('manualRate')) || DEFAULT_RATE;
+    let lastUpdate = localStorage.getItem('lastUpdate') || '--';
+
+    if (exchangeRate <= 1) { exchangeRate = DEFAULT_RATE; localStorage.setItem('exchangeRate', exchangeRate); }
+    if (manualRate <= 1) { manualRate = DEFAULT_RATE; localStorage.setItem('manualRate', manualRate); }
+
+    let categoriaFiltroActiva = "Todos";
+    let busquedaTextoActiva = "";
+    // 🔽 Cambio: el contador empieza en 2 para que el primer producto sea 002
+    let idCounter = parseInt(localStorage.getItem('idCounter')) || 2;
+    // Si ya existe un producto con código 001, el contador se ajusta automáticamente
+    // al obtener el máximo código existente en el momento de asignar códigos.
+
+    // ============================================================
+    // CAMBIO 1: Cargar productos desde localStorage con nueva clave
+    // ============================================================
+    let productos = JSON.parse(localStorage.getItem('wenamix_productos')) || [];
+    let auditoriaHistorial = JSON.parse(localStorage.getItem('auditoriaHistorial')) || [];
+
+    let vendedores = JSON.parse(localStorage.getItem('vendedores')) || [
+        { usuario: "admin", contrasena: "admin123", rol: "Administrador" }
+    ];
+
+    // Carga de elementos del DOM
+    const prodNombre = document.getElementById("prodNombre");
+    const prodCategoria = document.getElementById("prodCategoria");
+    const prodStock = document.getElementById("prodStock");
+    const globalMonedaSelector = document.getElementById("globalMonedaSelector");
+    const prodCosto = document.getElementById("prodCosto");
+    const prodPrecioInput = document.getElementById("prodPrecioInput");
+    const prodImgFile = document.getElementById("prodImgFile");
+    const prodImgUrl = document.getElementById("prodImgUrl");
+    const imgPreview = document.getElementById("prodImgPreview");
+    const imgPreviewImg = document.getElementById("prodImgPreviewImg");
+    const fileNameSpan = document.getElementById("prodImgFileName");
+    const removeBtn = document.getElementById("removeImgBtn");
+    const addProductoBtn = document.getElementById("addProductoBtn");
+    const searchProductInput = document.getElementById("searchProductInput");
+    const listaProductosContainer = document.getElementById("listaProductosContainer");
+    const currentRateText = document.getElementById("currentRateText");
+    const lastUpdateText = document.getElementById("lastUpdateText");
+    const manualRateInput = document.getElementById("manualRateInput");
+    const btnSetManual = document.getElementById("btnSetManual");
+
+    // Elementos del logo
+    const storeLogoUrl = document.getElementById("storeLogoUrl");
+    const storeLogoFile = document.getElementById("storeLogoFile");
+    const storeLogoFileLabel = document.getElementById("storeLogoFileLabel");
+    const storeLogoPreview = document.getElementById("storeLogoPreview");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+    const updateLogoBtn = document.getElementById("updateLogoBtn");
+    const loginLogoElement = document.getElementById("loginLogoElement");
+    const storeLogoElement = document.getElementById("storeLogoElement");
+
+    const bodyElement = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            bodyElement.classList.toggle("light-theme");
+        });
+    }
+
+    const setupTogglePassword = (inputId, iconId) => {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if(input && icon){
+            icon.addEventListener("click", () => {
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.replace("fa-eye", "fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.replace("fa-eye-slash", "fa-eye");
+                }
+            });
+        }
+    };
+    setupTogglePassword("loginPass", "toggleLoginPass");
+    setupTogglePassword("vendedorPass", "toggleVendedorPass");
+
+    const loginOverlay = document.getElementById("loginOverlay");
+    const mainAppWrapper = document.getElementById("mainAppWrapper");
+    const loginUser = document.getElementById("loginUser");
+    const loginPass = document.getElementById("loginPass");
+    const btnLoginSubmit = document.getElementById("btnLoginSubmit");
+    const loginErrorMessage = document.getElementById("loginErrorMessage");
+    const activeUserDisplay = document.getElementById("activeUserDisplay");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const sessionUserRol = document.getElementById("sessionUserRol");
+
+    // ========================================================================
+    // LOGIN Y AUTENTICACIÓN CONTROLADA
+    // ========================================================================
+    if (btnLoginSubmit) {
+        btnLoginSubmit.addEventListener("click", () => {
+            const userVal = loginUser.value.trim();
+            const passVal = loginPass.value.trim();
+            if (!userVal || !passVal) {
+                loginErrorMessage.textContent = "Campos requeridos vacíos.";
+                return;
+            }
+            const vend = vendedores.find(v => v.usuario === userVal && v.contrasena === passVal);
+            if (vend) {
+                loginErrorMessage.textContent = "";
+                sessionStorage.setItem('sesion', JSON.stringify({ usuario: vend.usuario, rol: vend.rol, inicio: Date.now() }));
+                evaluarEstadoSesion();
+                mostrarToast(`Sesión iniciada con éxito. Rol: ${vend.rol}`);
+            } else {
+                loginErrorMessage.textContent = "Credenciales incorrectas.";
+                mostrarToast("Error en el acceso.", "error");
+            }
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", cerrarSesion);
+    }
+
+    function cerrarSesion() {
+        sessionStorage.removeItem('sesion');
+        evaluarEstadoSesion();
+        mostrarToast("Has cerrado sesión.");
+    }
+
+    function evaluarEstadoSesion() {
+        const activa = verificarSesion();
+        if (activa) {
+            const datos = JSON.parse(sessionStorage.getItem('sesion'));
+            if (loginOverlay) loginOverlay.style.display = 'none';
+            if (mainAppWrapper) mainAppWrapper.style.display = 'block';
+            if (sessionUserRol) {
+                sessionUserRol.textContent = `${datos.usuario} (${datos.rol})`;
+            }
+            if (activeUserDisplay) {
+                activeUserDisplay.textContent = 'Salir';
+            }
+            
+            const tabConfig = document.getElementById('tabConfigLink');
+            if (tabConfig) {
+                tabConfig.style.display = datos.rol === 'Administrador' ? 'inline-flex' : 'none';
+            }
+        } else {
+            if (loginOverlay) loginOverlay.style.display = 'flex';
+            if (mainAppWrapper) mainAppWrapper.style.display = 'none';
+            if (sessionUserRol) sessionUserRol.textContent = '--';
+        }
+    }
+
+    // ========================================================================
+    // CARGA EXTENSIVA Y SEGURA DE IMÁGENES DESDE PC (MÓVIL / CARPETA PW)
+    // ========================================================================
+    function mostrarImagen(dataUrl, fileName) {
+        if(prodImgUrl) prodImgUrl.value = dataUrl;
+        if(imgPreviewImg) imgPreviewImg.src = dataUrl;
+        if(imgPreview) imgPreview.style.display = 'block';
+        if(fileNameSpan) fileNameSpan.textContent = `📁 PW: ${fileName}`;
+        if(removeBtn) removeBtn.style.display = 'inline';
+    }
+
+    function limpiarImagen() {
+        if(prodImgUrl) prodImgUrl.value = '';
+        if(imgPreview) imgPreview.style.display = 'none';
+        if(imgPreviewImg) imgPreviewImg.src = '';
+        if(fileNameSpan) fileNameSpan.textContent = '';
+        if(removeBtn) removeBtn.style.display = 'none';
+        if(prodImgFile) prodImgFile.value = '';
+    }
+
+    if (prodImgFile) {
+        prodImgFile.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp', 'image/x-icon', 'image/jfif'];
+            if (!tiposPermitidos.includes(file.type)) {
+                mostrarToast("Formato inválido. Formatos válidos: JPG, PNG, WEBP, GIF.", "error");
+                prodImgFile.value = '';
+                return;
+            }
+
+            try {
+                const dataUrl = await comprimirImagen(file, 800, 0.8);
+                mostrarImagen(dataUrl, file.name);
+                mostrarToast("Imagen cargada y procesada correctamente.");
+            } catch (error) {
+                mostrarToast('Error al leer el archivo local.', 'error');
+                prodImgFile.value = '';
+            }
+        });
+    }
+
+    if (removeBtn) {
+        removeBtn.addEventListener('click', limpiarImagen);
+    }
+
+    if (searchProductInput) {
+        searchProductInput.addEventListener("input", () => {
+            busquedaTextoActiva = searchProductInput.value.toLowerCase().trim();
+            renderProductos();
+            renderAuditoriaIPV('web');
+        });
+    }
+
+    // ========================================================================
+    // Sincronización con auditoría
+    // ========================================================================
+    function sincronizarAuditoriaConProducto(producto, index) {
+        let registro = auditoriaHistorial.find(a => {
+            const num = parseInt(a.id.slice(-3), 10);
+            return num === producto.codigoNum;
+        });
+
+        if (!registro) {
+            const categoriaAbr = producto.categoria ? producto.categoria.slice(0,2).toUpperCase() : 'XX';
+            const fechaStr = new Date().toISOString().slice(2,10).replace(/-/g,'');
+            const codigoCompleto = `A${fechaStr}${categoriaAbr}${String(producto.codigoNum).padStart(3,'0')}`;
+            registro = {
+                id: codigoCompleto,
+                fecha: new Date().toISOString().slice(0,10),
+                vendedor: "Sistema",
+                categoria: producto.categoria,
+                producto: producto.nombre,
+                monedaOriginal: "USD",
+                cantEntrada: producto.stock || 0,
+                precioCompra: producto.costo || 0,
+                cantVenta: 0,
+                precioVenta: producto.usd || 0
+            };
+            auditoriaHistorial.push(registro);
+        } else {
+            registro.categoria = producto.categoria;
+            registro.producto = producto.nombre;
+            registro.precioCompra = producto.costo;
+            registro.precioVenta = producto.usd;
+        }
+        localStorage.setItem('auditoriaHistorial', JSON.stringify(auditoriaHistorial));
+    }
+
+    function eliminarRegistroAuditoria(codigoNum) {
+        const idx = auditoriaHistorial.findIndex(a => {
+            const num = parseInt(a.id.slice(-3), 10);
+            return num === codigoNum;
+        });
+        if (idx !== -1) {
+            auditoriaHistorial.splice(idx, 1);
+            localStorage.setItem('auditoriaHistorial', JSON.stringify(auditoriaHistorial));
+        }
+    }
+
+    // ========================================================================
+    // ASIGNAR CÓDIGOS A PRODUCTOS (sincronización con auditoría)
+    // ========================================================================
+    function asignarCodigosProductos() {
+        let cambios = false;
+        // Determinar el código más alto existente para continuar
+        let maxCodigo = 1;
+        productos.forEach(p => {
+            if (p.codigoNum && p.codigoNum > maxCodigo) {
+                maxCodigo = p.codigoNum;
+            }
+        });
+        if (maxCodigo >= idCounter) {
+            idCounter = maxCodigo + 1;
+        }
+
+        productos.forEach((p) => {
+            if (!p.codigoNum) {
+                const registro = auditoriaHistorial.find(a => a.producto === p.nombre);
+                if (registro) {
+                    const match = registro.id.match(/(\d{3})$/);
+                    if (match) {
+                        p.codigoNum = parseInt(match[1], 10);
+                    } else {
+                        p.codigoNum = idCounter++;
+                        cambios = true;
+                    }
+                } else {
+                    p.codigoNum = idCounter++;
+                    cambios = true;
+                    const categoriaAbr = p.categoria ? p.categoria.slice(0,2).toUpperCase() : 'XX';
+                    const fechaStr = new Date().toISOString().slice(2,10).replace(/-/g,'');
+                    const codigoCompleto = `A${fechaStr}${categoriaAbr}${String(p.codigoNum).padStart(3,'0')}`;
+                    auditoriaHistorial.push({
+                        id: codigoCompleto,
+                        fecha: new Date().toISOString().slice(0,10),
+                        vendedor: "Sistema",
+                        categoria: p.categoria || 'General',
+                        producto: p.nombre,
+                        monedaOriginal: "USD",
+                        cantEntrada: p.stock || 0,
+                        precioCompra: p.costo || 0,
+                        cantVenta: 0,
+                        precioVenta: p.usd || 0
+                    });
+                    localStorage.setItem('auditoriaHistorial', JSON.stringify(auditoriaHistorial));
+                }
+            }
+        });
+        if (cambios) {
+            localStorage.setItem('productos', JSON.stringify(productos)); // se mantiene por compatibilidad, pero usaremos la nueva clave
+            localStorage.setItem('idCounter', idCounter);
+        }
+    }
+
+    // ========================================================================
+    // RENDERIZADO CONTROLADO Y SINCRONIZADO DEL ALMACÉN
+    // ========================================================================
+    function renderProductos() {
+        if (!listaProductosContainer) return;
+        listaProductosContainer.innerHTML = "";
+
+        productos.forEach((p, indexOriginal) => {
+            if (busquedaTextoActiva && !p.nombre.toLowerCase().includes(busquedaTextoActiva)) return;
+
+            const precioCUP = redondear(p.usd * exchangeRate);
+            const tr = document.createElement("tr");
+
+            // Foto
+            const tdImg = document.createElement("td");
+            if (p.img) {
+                const img = document.createElement("img");
+                img.className = "prod-thumb";
+                img.src = p.img;
+                img.alt = p.nombre;
+                tdImg.appendChild(img);
+            } else {
+                const span = document.createElement("span");
+                span.className = "no-img-label";
+                span.textContent = "Sin foto";
+                tdImg.appendChild(span);
+            }
+            tr.appendChild(tdImg);
+
+            // Código (3 dígitos)
+            const tdCod = document.createElement("td");
+            tdCod.style.fontWeight = "bold";
+            tdCod.style.fontFamily = "monospace";
+            tdCod.textContent = String(p.codigoNum || (indexOriginal+1)).padStart(3, '0');
+            tr.appendChild(tdCod);
+
+            // Nombre
+            const tdNom = document.createElement("td");
+            const strNom = document.createElement("strong");
+            strNom.textContent = p.nombre;
+            tdNom.appendChild(strNom);
+            tr.appendChild(tdNom);
+
+            // Categoría
+            const tdCat = document.createElement("td");
+            const spanCat = document.createElement("span");
+            spanCat.className = "tag-categoria";
+            spanCat.textContent = p.categoria || 'General';
+            tdCat.appendChild(spanCat);
+            tr.appendChild(tdCat);
+
+            // Stock
+            const tdStock = document.createElement("td");
+            tdStock.style.fontWeight = "bold";
+            tdStock.textContent = `${p.stock} U`;
+            tr.appendChild(tdStock);
+
+            // Costo
+            const tdCosto = document.createElement("td");
+            tdCosto.textContent = `$${redondear(p.costo).toFixed(2)}`;
+            tr.appendChild(tdCosto);
+
+            // Precio USD
+            const tdUsd = document.createElement("td");
+            tdUsd.textContent = `$${redondear(p.usd).toFixed(2)}`;
+            tr.appendChild(tdUsd);
+
+            // Precio CUP (miles con espacios)
+            const tdCup = document.createElement("td");
+            tdCup.style.fontWeight = "bold";
+            tdCup.style.color = "var(--warning)";
+            tdCup.style.fontFamily = "monospace";
+            tdCup.textContent = formatoEstiloContable(precioCUP);
+            tr.appendChild(tdCup);
+
+            // Columna Dual de Acciones (Editar y Eliminar)
+            const tdAccion = document.createElement("td");
+            
+            const btnEdit = document.createElement("button");
+            btnEdit.className = "btn-edit-inline-style";
+            btnEdit.title = "Editar Producto";
+            btnEdit.innerHTML = `<i class="fas fa-edit"></i>`;
+            btnEdit.onclick = () => cargarProductoParaEditar(indexOriginal);
+            tdAccion.appendChild(btnEdit);
+
+            const btnDel = document.createElement("button");
+            btnDel.className = "btn-delete-original-style";
+            btnDel.title = "Eliminar Producto";
+            btnDel.innerHTML = `<i class="fas fa-trash"></i>`;
+            btnDel.onclick = () => eliminarProducto(indexOriginal);
+            tdAccion.appendChild(btnDel);
+
+            tr.appendChild(tdAccion);
+            listaProductosContainer.appendChild(tr);
+        });
+
+        // Guardar en localStorage con la nueva clave
+        localStorage.setItem('wenamix_productos', JSON.stringify(productos));
+    }
+
+    // ========================================================================
+    // ACCIONES CONTROLADAS: GUARDAR, EDITAR Y ELIMINAR SINCRONIZADOS
+    // ========================================================================
+    function cargarProductoParaEditar(index) {
+        const prod = productos[index];
+        if (!prod) return;
+
+        indiceEdicionActivo = index;
+        
+        prodNombre.value = prod.nombre;
+        prodCategoria.value = prod.categoria;
+        prodStock.value = prod.stock;
+        prodCosto.value = prod.costo;
+        prodPrecioInput.value = prod.usd;
+        
+        if (prod.img) {
+            mostrarImagen(prod.img, "Cargada");
+        } else {
+            limpiarImagen();
+        }
+
+        addProductoBtn.innerHTML = `<i class="fas fa-save"></i> Guardar Cambios ✏️`;
+        addProductoBtn.style.backgroundColor = "var(--warning)";
+        mostrarToast("Producto cargado en el formulario superior para editar.");
+    }
+
+    if (addProductoBtn) {
+        addProductoBtn.addEventListener("click", () => {
+            if (!verificarSeguridad(csrfToken)) return;
+
+            const nombre = prodNombre.value.trim();
+            const categoria = prodCategoria.value;
+            let img = prodImgUrl.value.trim();
+            const stock = parseInt(prodStock.value) || 0;
+            const costo = parseFloat(prodCosto.value) || 0;
+            const precio = parseFloat(prodPrecioInput.value) || 0;
+
+            if (!nombre) {
+                mostrarToast("El nombre del producto no puede estar vacío.", "error");
+                return;
+            }
+            if (!categoria) {
+                mostrarToast("Debe seleccionar una categoría.", "error");
+                return;
+            }
+
+            // Verificar duplicados
+            const existeDuplicado = productos.some((p, idx) => {
+                if (indiceEdicionActivo !== null && idx === indiceEdicionActivo) return false;
+                return p.nombre.toLowerCase() === nombre.toLowerCase();
+            });
+
+            if (existeDuplicado) {
+                const confirmar = confirm(`El producto "${nombre}" ya existe. ¿Deseas agregarlo de todas formas?`);
+                if (!confirmar) {
+                    return;
+                }
+            }
+
+            if (indiceEdicionActivo !== null) {
+                const productoEditado = productos[indiceEdicionActivo];
+                productoEditado.nombre = nombre;
+                productoEditado.categoria = categoria;
+                productoEditado.img = img;
+                productoEditado.stock = stock;
+                productoEditado.costo = costo;
+                productoEditado.usd = precio;
+
+                sincronizarAuditoriaConProducto(productoEditado, indiceEdicionActivo);
+
+                mostrarToast(`¡Producto "${nombre}" modificado correctamente!`);
+                
+                indiceEdicionActivo = null;
+                addProductoBtn.innerHTML = `<i class="fas fa-plus"></i> Agregar Producto`;
+                addProductoBtn.style.backgroundColor = "var(--primary)";
+            } else {
+                const nuevoCodigo = idCounter++;
+                const categoriaAbr = categoria.slice(0,2).toUpperCase();
+                const fechaStr = new Date().toISOString().slice(2,10).replace(/-/g,'');
+                const codigoCompleto = `A${fechaStr}${categoriaAbr}${String(nuevoCodigo).padStart(3,'0')}`;
+                
+                const nuevoProducto = {
+                    nombre: nombre,
+                    categoria: categoria,
+                    img: img,
+                    stock: stock,
+                    costo: costo,
+                    usd: precio,
+                    codigoNum: nuevoCodigo
+                };
+                productos.push(nuevoProducto);
+
+                auditoriaHistorial.push({
+                    id: codigoCompleto,
+                    fecha: new Date().toISOString().slice(0,10),
+                    vendedor: "Sistema",
+                    categoria: categoria,
+                    producto: nombre,
+                    monedaOriginal: "USD",
+                    cantEntrada: stock,
+                    precioCompra: costo,
+                    cantVenta: 0,
+                    precioVenta: precio
+                });
+                localStorage.setItem('auditoriaHistorial', JSON.stringify(auditoriaHistorial));
+                localStorage.setItem('idCounter', idCounter);
+                mostrarToast(`¡Producto "${nombre}" añadido con código ${String(nuevoCodigo).padStart(3,'0')}!`);
+            }
+
+            // CAMBIO 2: Guardar productos en localStorage después de agregar
+            localStorage.setItem('wenamix_productos', JSON.stringify(productos));
+
+            prodNombre.value = "";
+            prodStock.value = "";
+            prodCosto.value = "";
+            prodPrecioInput.value = "";
+            limpiarImagen();
+
+            renderProductos();
+            renderAuditoriaIPV('web');
+        });
+    }
+
+    window.eliminarProducto = function(index) {
+        if (!verificarSeguridad(csrfToken)) return;
+        
+        const eliminado = productos[index];
+        if (!eliminado) return;
+        const nombre = eliminado.nombre;
+        const codigoNum = eliminado.codigoNum;
+
+        productos.splice(index, 1);
+        // CAMBIO 3: Guardar productos en localStorage después de eliminar
+        localStorage.setItem('wenamix_productos', JSON.stringify(productos));
+
+        eliminarRegistroAuditoria(codigoNum);
+
+        renderProductos();
+        renderAuditoriaIPV('web');
+        mostrarToast(`Producto "${nombre}" eliminado junto con su historial.`, "error");
+    };
+
+    // ========================================================================
+    // RENDERIZADO SEGURO DE AUDITORÍA (IPV)
+    // ========================================================================
+    function renderAuditoriaIPV(tipo) {
+        const tbody = document.getElementById("tbodyAuditoriaIPVContainer");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        auditoriaHistorial.forEach((item) => {
+            if (busquedaTextoActiva && !item.producto.toLowerCase().includes(busquedaTextoActiva)) return;
+
+            const entradaImporte = redondear(item.cantEntrada * item.precioCompra);
+            const ventaImporte = redondear(item.cantVenta * item.precioVenta);
+            const existenciaCant = item.cantEntrada - item.cantVenta;
+            const existenciaSaldo = redondear(existenciaCant * item.precioVenta);
+            const importeFinalCUP = redondear(ventaImporte * exchangeRate);
+            const gananciaNetasCUP = redondear((item.precioVenta - item.precioCompra) * item.cantVenta * exchangeRate);
+
+            const tr = document.createElement("tr");
+
+            function crearCelda(texto, clase = "") {
+                const td = document.createElement("td");
+                if (clase) td.className = clase;
+                td.textContent = texto;
+                return td;
+            }
+
+            const tdCod = crearCelda(item.id || 'N/A', "align-center");
+            tdCod.style.fontWeight = "bold";
+            tr.appendChild(tdCod);
+
+            if (tipo !== 'web') {
+                tr.appendChild(crearCelda(item.fecha, "align-center"));
+                tr.appendChild(crearCelda(item.vendedor, "align-center"));
+            }
+
+            const tdCatProd = document.createElement("td");
+            tdCatProd.className = "align-left";
+            tdCatProd.innerHTML = `<strong>${item.categoria}</strong><br><strong>${item.producto}</strong>`;
+            tr.appendChild(tdCatProd);
+
+            tr.appendChild(crearCelda(item.cantEntrada, "align-center bold-number"));
+            tr.appendChild(crearCelda(`$${redondear(item.precioCompra).toFixed(2)}`, "align-center"));
+            tr.appendChild(crearCelda(`$${entradaImporte.toFixed(2)}`, "align-center bold-number"));
+            tr.appendChild(crearCelda(item.cantVenta, "align-center bold-number"));
+            tr.appendChild(crearCelda(`$${redondear(item.precioVenta).toFixed(2)}`, "align-center"));
+            tr.appendChild(crearCelda(`$${ventaImporte.toFixed(2)}`, "align-center bold-number"));
+            tr.appendChild(crearCelda(existenciaCant, "align-center bold-number"));
+            tr.appendChild(crearCelda(`$${redondear(item.precioVenta).toFixed(2)}`, "align-center"));
+            tr.appendChild(crearCelda(`$${existenciaSaldo.toFixed(2)}`, "align-center"));
+            tr.appendChild(crearCelda(formatoEstiloContable(importeFinalCUP), "align-center bold-number"));
+            tr.appendChild(crearCelda(formatoEstiloContable(gananciaNetasCUP), "align-center bold-number"));
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ========================================================================
+    // GESTIÓN DE VENDEDORES
+    // ========================================================================
+    function renderVendedores() {
+        const container = document.getElementById("listaVendedoresContainer");
+        if(!container) return;
+        container.innerHTML = "";
+
+        const personalReg = vendedores.filter(v => v.rol !== "Administrador");
+        personalReg.forEach((v) => {
+            const indexOriginal = vendedores.findIndex(orig => orig.usuario === v.usuario);
+            const div = document.createElement("div");
+            div.className = "vendedor-item";
+            div.innerHTML = `
+                <div>
+                    <i class="fas fa-user" style="color:var(--primary); margin-right:5px;"></i>
+                    <strong>${v.usuario}</strong>
+                    <span style="color:var(--warning); font-size:0.9rem;"> — Vendedor ${v.rol}</span>
+                </div>
+            `;
+            const btn = document.createElement("button");
+            btn.className = "btn-delete-original-style";
+            btn.innerHTML = `<i class="fas fa-trash"></i>`;
+            btn.onclick = () => {
+                if (!verificarSeguridad(csrfToken)) return;
+                vendedores.splice(indexOriginal, 1);
+                localStorage.setItem('vendedores', JSON.stringify(vendedores));
+                renderVendedores();
+                mostrarToast("Vendedor removido del sistema.", "error");
+            };
+            div.appendChild(btn);
+            container.appendChild(div);
+        });
+
+        const cAvanzado = vendedores.filter(v => v.rol === 'Avanzado').length;
+        const cEstandar = vendedores.filter(v => v.rol === 'Estándar').length;
+        document.getElementById("cuposDisplay").textContent = `Cupos Utilizados -> Avanzado: ${cAvanzado}/1 | Estándares: ${cEstandar}/3`;
+    }
+
+    const addVendedorBtn = document.getElementById("addVendedorBtn");
+    if (addVendedorBtn) {
+        addVendedorBtn.addEventListener("click", () => {
+            if (!verificarSeguridad(csrfToken)) return;
+            const u = document.getElementById("vendedorUser").value.trim();
+            const p = document.getElementById("vendedorPass").value.trim();
+            const r = document.getElementById("vendedorRol").value;
+
+            if(!u || !p) {
+                mostrarToast("Rellene el usuario y contraseña.", "error");
+                return;
+            }
+
+            const cAvanzado = vendedores.filter(v => v.rol === 'Avanzado').length;
+            const cEstandar = vendedores.filter(v => v.rol === 'Estándar').length;
+
+            if (r === 'Avanzado' && cAvanzado >= 1) {
+                mostrarToast("Cupo de vendedor Avanzado completo (Máximo 1).", "error");
+                return;
+            }
+            if (r === 'Estándar' && cEstandar >= 3) {
+                mostrarToast("Cupo de vendedores Estándar completo (Máximo 3).", "error");
+                return;
+            }
+
+            vendedores.push({ usuario: u, contrasena: p, rol: r });
+            localStorage.setItem('vendedores', JSON.stringify(vendedores));
+            document.getElementById("vendedorUser").value = "";
+            document.getElementById("vendedorPass").value = "";
+            renderVendedores();
+            mostrarToast("Vendedor creado con éxito.");
+        });
+    }
+
+    // ========================================================================
+    // TASA DE CAMBIO MANUAL
+    // ========================================================================
+    function actualizarAvisoTasa() {
+        if(currentRateText) currentRateText.textContent = exchangeRate.toFixed(2);
+        if(lastUpdateText) lastUpdateText.textContent = lastUpdate;
+        if(manualRateInput) manualRateInput.value = manualRate;
+    }
+
+    if (btnSetManual) {
+        btnSetManual.addEventListener("click", () => {
+            if (!verificarSeguridad(csrfToken)) return;
+            const val = parseFloat(manualRateInput.value);
+            if (val > 1) {
+                manualRate = val;
+                exchangeRate = val;
+                const now = new Date();
+                lastUpdate = `${now.toISOString().split('T')[0]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                localStorage.setItem('manualRate', manualRate);
+                localStorage.setItem('exchangeRate', exchangeRate);
+                localStorage.setItem('lastUpdate', lastUpdate);
+                actualizarAvisoTasa();
+                renderProductos();
+                renderAuditoriaIPV('web');
+                mostrarToast(`Tasa manual establecida en: 1 USD = ${manualRate.toFixed(2)} CUP`);
+            } else {
+                mostrarToast("Introduzca una tasa de cambio válida.", "error");
+            }
+        });
+    }
+
+    // Navegación de pestañas
+    window.cambiarBloque = function(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('.tab-link').forEach(tl => tl.classList.remove('active'));
+        
+        const targetTab = document.getElementById(tabId);
+        if(targetTab) targetTab.classList.add('active');
+        
+        const btnActivo = Array.from(document.querySelectorAll('.tab-link')).find(b => b.getAttribute('onclick').includes(tabId));
+        if(btnActivo) btnActivo.classList.add('active');
+
+        if(tabId === 'tabAuditoria') {
+            renderAuditoriaIPV('web');
+        }
+    };
+
+    // ========================================================================
+    // GESTIÓN DEL LOGOTIPO - CORREGIDA Y REFORZADA
+    // ========================================================================
+    function cargarLogoGuardado() {
+        const logoData = localStorage.getItem('storeLogo');
+        if (logoData) {
+            // Login
+            const loginImg = loginLogoElement.querySelector('img');
+            if (!loginImg) {
+                const img = document.createElement('img');
+                img.src = logoData;
+                img.alt = 'Logo';
+                loginLogoElement.innerHTML = '';
+                loginLogoElement.appendChild(img);
+            } else {
+                loginImg.src = logoData;
+            }
+            // Header
+            const headerImg = storeLogoElement.querySelector('img');
+            if (!headerImg) {
+                const img = document.createElement('img');
+                img.src = logoData;
+                img.alt = 'Logo';
+                storeLogoElement.innerHTML = '';
+                storeLogoElement.appendChild(img);
+            } else {
+                headerImg.src = logoData;
+            }
+            // Preview
+            storeLogoPreview.src = logoData;
+            storeLogoPreview.style.display = 'block';
+            storeLogoUrl.value = logoData;
+        } else {
+            loginLogoElement.innerHTML = '<i class="fas fa-store"></i>';
+            storeLogoElement.innerHTML = '<i class="fas fa-store" style="font-size: 0.9rem;"></i>';
+            storeLogoPreview.style.display = 'none';
+            storeLogoPreview.src = '';
+        }
+    }
+
+    // Evento para seleccionar archivo y previsualizar
+    if (storeLogoFile) {
+        storeLogoFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            fileNameDisplay.textContent = `Archivo seleccionado: ${file.name}`;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                storeLogoPreview.src = event.target.result;
+                storeLogoPreview.style.display = 'block';
+                storeLogoUrl.value = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Botón "Aplicar Cambios"
+    if (updateLogoBtn) {
+        updateLogoBtn.addEventListener('click', function() {
+            if (!verificarSeguridad(csrfToken)) return;
+
+            let imagenData = storeLogoUrl.value.trim();
+            if (!imagenData) {
+                mostrarToast('Debes pegar una URL o seleccionar un archivo.', 'error');
+                return;
+            }
+
+            localStorage.setItem('storeLogo', imagenData);
+            cargarLogoGuardado();
+            mostrarToast('Logo actualizado correctamente.');
+        });
+    }
+
+    // Inicializador al cargar el DOM
+    window.addEventListener("DOMContentLoaded", () => {
+        evaluarEstadoSesion();
+        actualizarAvisoTasa();
+        asignarCodigosProductos();
+        renderProductos();
+        renderVendedores();
+        renderAuditoriaIPV('web');
+        cargarLogoGuardado(); // 🔽 Asegurar que el logo se cargue al iniciar
+
+        setInterval(() => {
+            if (sessionStorage.getItem('sesion') && !verificarSesion()) {
+                evaluarEstadoSesion();
+            }
+        }, 60000);
+    });
+    </script>
+</body>
+</html>

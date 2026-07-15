@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Venta - WenaMix Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #09090e;
+            --input-bg: #11111f;
+            --border-color: #222235;
+            --primary: #4f46e5;
+            --primary-accent: #10b981;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --card-bg: #11111f;
+            --card-shadow: rgba(0, 0, 0, 0.6);
+        }
+
+        body.light-theme {
+            --bg-dark: #f8fafc;
+            --input-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --primary: #4f46e5;
+            --primary-accent: #10b981;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header {
+            background: var(--input-bg);
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-container { display: flex; align-items: center; gap: 12px; }
+        #storeLogoElement {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        #storeLogoElement img { width: 100%; height: 100%; object-fit: cover; }
+
+        main {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover { color: var(--text-main); }
+
+        .venta-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px var(--card-shadow);
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .item-price { text-align: right; font-weight: 600; }
+
+        .total-box {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--border-color);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .total-cup { font-size: 1.8rem; font-weight: 800; color: var(--primary-accent); font-family: monospace; }
+
+        .action-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+        
+        .btn-order {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .btn-order:hover { opacity: 0.9; }
+        .btn-whatsapp { background: #25d366; }
+        .btn-telegram { background: #0088cc; }
+        .btn-clear { background: #ef4444; margin-top: 8px; font-size: 0.9rem; padding: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-container">
+            <div id="storeLogoElement"><i class="fas fa-store"></i></div>
+            <h2 id="storeNameText" style="margin: 0; font-size: 1.3rem; font-weight: 700;">WenaMix Pro</h2>
+        </div>
+        <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">Confirmar Orden</span>
+    </header>
+
+    <main>
+        <button class="btn-back" onclick="window.location.href='tienda.html'">
+            <i class="fas fa-arrow-left"></i> Volver al Catálogo
+        </button>
+
+        <div class="venta-card">
+            <h3 style="margin-top: 0;">Resumen de tu Compra</h3>
+            
+            <div id="itemList"></div>
+
+            <div class="total-box">
+                <div class="total-row">
+                    <span style="color: var(--text-muted);">Total de referencia:</span>
+                    <span id="totalUSD">$ 0.00 USD</span>
+                </div>
+                <div class="total-row">
+                    <strong>Total Neto a Pagar (CUP):</strong>
+                    <span id="totalCUP" class="total-cup">$ 0.00</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-order btn-whatsapp" onclick="enviarPedido('whatsapp')">
+                    <i class="fab fa-whatsapp"></i> Enviar Pedido por WhatsApp
+                </button>
+                <button class="btn-order btn-telegram" onclick="enviarPedido('telegram')">
+                    <i class="fab fa-telegram-plane"></i> Enviar Pedido por Telegram
+                </button>
+                <button class="btn-order btn-clear" onclick="limpiarCarrito()">
+                    <i class="fas fa-trash-alt"></i> Vaciar Carrito
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const exchangeRate = parseFloat(localStorage.getItem('exchangeRate')) || 350.0;
+
+        function redondear(valor) { return Math.round((valor + Number.EPSILON) * 100) / 100; }
+        
+        function formatoCUP(valor) {
+            return `$ ${redondear(valor).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ")}`;
+        }
+
+        function sincronizarIdentidad() {
+            const logoGuardado = localStorage.getItem('storeLogo');
+            const nombreGuardado = localStorage.getItem('storeName') || "WenaMix Pro";
+            
+            const storeNameText = document.getElementById('storeNameText');
+            if (storeNameText) storeNameText.textContent = nombreGuardado;
+
+            const storeLogoElement = document.getElementById('storeLogoElement');
+            if (storeLogoElement) {
+                if (logoGuardado) {
+                    storeLogoElement.innerHTML = `<img src="${logoGuardado}" alt="Logo ${nombreGuardado}">`;
+                } else {
+                    storeLogoElement.innerHTML = `<i class="fas fa-store"></i>`;
+                }
+            }
+        }
+
+        function cargarResumenVenta() {
+            const carrito = JSON.parse(localStorage.getItem('carrito_wenamix')) || [];
+            const container = document.getElementById('itemList');
+            
+            if (carrito.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px 0;">Tu carrito está vacío.</p>`;
+                document.querySelector('.action-buttons').style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = '';
+            let acumUSD = 0;
+            let acumCUP = 0;
+
+            carrito.forEach(item => {
+                const itemCUP = item.usd * exchangeRate;
+                const subtotalUSD = item.usd * item.cantidad;
+                const subtotalCUP = itemCUP * item.cantidad;
+                
+                acumUSD += subtotalUSD;
+                acumCUP += subtotalCUP;
+
+                const row = document.createElement('div');
+                row.className = 'order-item';
+                row.innerHTML = `
+                    <div>
+                        <h4 style="margin:0 0 4px 0;">${item.nombre}</h4>
+                        <span style="color:var(--text-muted); font-size:0.85rem;">Cantidad: ${item.cantidad}</span>
+                    </div>
+                    <div class="item-price">
+                        <div>${formatoCUP(subtotalCUP)}</div>
+                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:normal;">$ ${subtotalUSD.toFixed(2)} USD</span>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('totalUSD').textContent = `$ ${acumUSD.toFixed(2)} USD`;
+            document.getElementById('totalCUP').textContent = formatoCUP(acumCUP);
+        }
+
+        function enviarPedido(plataforma) {
+            const carrito = JSON.parse(localStorage.getItem('carrito_wenamix')) || [];
+            if (carrito.length === 0) return;
+
+            const nombreTienda = localStorage.getItem('storeName') || "WenaMix Pro";
+            let mensaje = `¡Hola! Me gustaría hacer un pedido en *${nombreTienda}*:%0A%0A`;
+            let totalGeneralCUP = 0;
+
+            carrito.forEach(item => {
+                const itemCUP = item.usd * exchangeRate;
+                const subtotalCUP = itemCUP * item.cantidad;
+                totalGeneralCUP += subtotalCUP;
+                mensaje += `• *${item.nombre}* (x${item.cantidad}) -> ${formatoCUP(subtotalCUP)}%0A`;
+            });
+
+            mensaje += `%0A*Tasa aplicada:* 1 USD = ${exchangeRate.toFixed(2)} CUP`;
+            mensaje += `%0A*Total Neto a Pagar: ${formatoCUP(totalGeneralCUP)}*%0A%0AQuedo atento a la confirmación de disponibilidad.`;
+
+            if (plataforma === 'whatsapp') {
+                const numeroWhatsApp = "5355555555"; // Tu teléfono real aquí
+                window.open(`https://wa.me/${numeroWhatsApp}?text=${mensaje}`, '_blank');
+            } else if (plataforma === 'telegram') {
+                const usuarioTelegram = "TuUsuarioTelegram"; // Tu alias real sin el @
+                window.open(`https://t.me/${usuarioTelegram}?text=${mensaje}`, '_blank');
+            }
+        }
+
+        function limpiarCarrito() {
+            localStorage.removeItem('carrito_wenamix');
+            cargarResumenVenta();
+        }
+
+        function inicializarTema() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.remove('light-theme');
+            } else {
+                document.body.classList.add('light-theme');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            inicializarTema();
+            sincronizarIdentidad();
+            cargarResumenVenta();
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (['storeLogo', 'storeName', 'darkMode', 'exchangeRate'].includes(e.key)) {
+                inicializarTema();
+                sincronizarIdentidad();
+                cargarResumenVenta();
+            }
+        });
+    </script>
+</body>
+</html>
